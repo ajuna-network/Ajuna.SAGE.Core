@@ -1,4 +1,10 @@
-# SAGE Game Framework
+# SAGE Game Framework (ref. implementation)
+![Build](https://github.com/ajuna-network/Ajuna.SAGE.Core/actions/workflows/build.yml/badge.svg)
+[![Nuget](https://img.shields.io/nuget/v/Ajuna.SAGE.Core)](https://www.nuget.org/packages/Ajuna.SAGE.Core/)
+[![GitHub issues](https://img.shields.io/github/issues/ajuna-network/Ajuna.SAGE.Core.svg)](https://github.com/ajuna-network/Ajuna.SAGE.Core/issues)
+[![license](https://img.shields.io/github/license/ajuna-network/Ajuna.SAGE.Core)](https://github.com/ajuna-network/Ajuna.SAGE.Core/blob/origin/LICENSE)
+[![contributors](https://img.shields.io/github/contributors/ajuna-network/Ajuna.SAGE.Core)](https://github.com/ajuna-network/Ajuna.SAGE.Core/graphs/contributors) 
+[![Nuget](https://img.shields.io/nuget/dt/Ajuna.SAGE.Core)](https://www.nuget.org/packages/Ajuna.SAGE.Core/) 
 
 The SAGE Game Framework is a modular engine designed for game state management using an asset-based, state-transition model. Instead of using a traditional database, SAGE stores state directly on "assets" (e.g., game cards), and state changes are performed by executing transitions that consume and produce assets. This architecture allows for a flexible, decentralized, and extensible game design.
 
