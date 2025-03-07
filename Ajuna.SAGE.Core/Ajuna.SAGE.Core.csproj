@@ -1,21 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	<TargetFrameworks>netstandard2.1;net6.0;net8.0</TargetFrameworks>
-	<Nullable>enable</Nullable>
-	<!-- NuGet Package Informationen -->
-	<PackageId>Ajuna.SAGE.Core</PackageId>
-	<Version>0.0.1</Version>
-	<Company>BloGa Tech AG</Company>
-	<Authors>Cedric Decoster</Authors>
-	<Description>Substrate Asset Game Engine (reference implementation)</Description>
-	<PackageProjectUrl>https://github.com/ajuna-network</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/ajuna-network/Ajuna.SAGE.Core</RepositoryUrl>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0;net8.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<!-- NuGet Package Informationen -->
+		<PackageId>Ajuna.SAGE.Core</PackageId>
+		<Version>0.0.2</Version>
+		<Company>BloGa Tech AG</Company>
+		<Authors>Cedric Decoster</Authors>
+		<Description>Substrate Asset Game Engine (reference implementation)</Description>
+		<PackageProjectUrl>https://github.com/ajuna-network</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ajuna-network/Ajuna.SAGE.Core</RepositoryUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeReferencedProjects>true</IncludeReferencedProjects>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj" />
+	</ItemGroup>
 
 </Project>

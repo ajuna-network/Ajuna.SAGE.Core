@@ -1,8 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0;net8.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<!-- NuGet Package Informationen -->
+		<PackageId>Ajuna.SAGE.Generic</PackageId>
+		<Version>0.0.2</Version>
+		<Company>BloGa Tech AG</Company>
+		<Authors>Cedric Decoster</Authors>
+		<Description>Substrate Asset Game Engine (generics)</Description>
+		<PackageProjectUrl>https://github.com/ajuna-network</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ajuna-network/Ajuna.SAGE.Generic</RepositoryUrl>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
 
 </Project>
