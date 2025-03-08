@@ -80,9 +80,9 @@ namespace Ajuna.SAGE.Core
         /// <param name="avatars"></param>
         /// <param name="blockNumber"></param>
         /// <returns></returns>
-        public bool Transition(IAccount executor, TIdentifier identifier, IAsset[]? avatars, out IAsset[] result)
+        public bool Transition(IAccount executor, TIdentifier identifier, IAsset[]? avatars, out IAsset[] result, object? config = null)
         {
-            return Transition(executor, identifier, avatars, _blockchainInfo.GenerateRandomHash(), _blockchainInfo.CurrentBlockNumber, out result);
+            return Transition(executor, identifier, avatars, _blockchainInfo.GenerateRandomHash(), _blockchainInfo.CurrentBlockNumber, out result, config);
         }
 
         /// <summary>

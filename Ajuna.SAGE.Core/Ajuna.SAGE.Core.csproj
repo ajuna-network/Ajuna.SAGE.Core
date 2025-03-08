@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<!-- NuGet Package Informationen -->
 		<PackageId>Ajuna.SAGE.Core</PackageId>
-		<Version>0.0.3</Version>
+		<Version>0.0.4</Version>
 		<Company>BloGa Tech AG</Company>
 		<Authors>Cedric Decoster</Authors>
 		<Description>Substrate Asset Game Engine (reference implementation)</Description>
