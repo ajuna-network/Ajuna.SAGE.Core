@@ -28,7 +28,7 @@ namespace Ajuna.SAGE.Core.Test
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) =>
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
@@ -36,7 +36,7 @@ namespace Ajuna.SAGE.Core.Test
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b, m, s) => true)
+                .SetVerifyFunction((p, r, a, b, c, m, s) => true)
                 .AddTransition(identifier, new[] { rules }, default, function)
                 .Build();
 
@@ -69,14 +69,14 @@ namespace Ajuna.SAGE.Core.Test
             var rules1 = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
             var rules2 = new ActionRule(ActionRuleType.MaxAsset, ActionRuleOp.LesserEqual, 5);
 
-            TransitionFunction<ActionRule> function1 = (e, r, f, w, h, b, m) =>
+            TransitionFunction<ActionRule> function1 = (e, r, f, w, h, b, c, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
                 return new List<IAsset> { asset };
             };
 
-            TransitionFunction<ActionRule> function2 = (e, r, f, w, h, b, m) =>
+            TransitionFunction<ActionRule> function2 = (e, r, f, w, h, b, c, m) =>
             {
                 var asset = w.First();
                 asset.Score += 20;
@@ -84,7 +84,7 @@ namespace Ajuna.SAGE.Core.Test
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b, m, s) => true)
+                .SetVerifyFunction((p, r, a, b, c, m, s) => true)
                 .AddTransition(identifier1, [rules1], default, function1)
                 .AddTransition(identifier2, [rules2], default, function2)
                 .Build();

@@ -16,6 +16,7 @@ namespace Ajuna.SAGE.Core
         IEnumerable<IAsset> assets,
         byte[] randomHash,
         uint blockNumber,
+        object? config,
         IBalanceManager assetBalances)
         where TRules : ITransitionRule;
 
@@ -26,7 +27,7 @@ namespace Ajuna.SAGE.Core
         private readonly IBlockchainInfoProvider _blockchainInfo;
         public IBlockchainInfoProvider BlockchainInfoProvider => _blockchainInfo;
 
-        private readonly Func<IAccount, TRules, IAsset[], uint, IBalanceManager, IAssetManager, bool> _verifyFunction;
+        private readonly Func<IAccount, TRules, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> _verifyFunction;
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
@@ -46,7 +47,7 @@ namespace Ajuna.SAGE.Core
         /// Game
         /// </summary>
         /// <param name="seed"></param>
-        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IAccount, TRules, IAsset[], uint, IBalanceManager, IAssetManager, bool> verifyFunction)
+        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IAccount, TRules, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> verifyFunction)
         {
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
@@ -93,7 +94,7 @@ namespace Ajuna.SAGE.Core
         /// <param name="blockNumber"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        internal bool Transition(IAccount executor, TIdentifier identifier, IAsset[]? inAssets, byte[] randomHash, uint blockNumber, out IAsset[] outAssets)
+        internal bool Transition(IAccount executor, TIdentifier identifier, IAsset[]? inAssets, byte[] randomHash, uint blockNumber, out IAsset[] outAssets, object? config = null)
         {
             // initialize to avoid null checks
             inAssets ??= Array.Empty<IAsset>();
@@ -120,7 +121,7 @@ namespace Ajuna.SAGE.Core
             TransitionFunction<TRules> function = tuple.function;
 
             // check if the executor has the assets and the rules are all okay
-            if (!rules.All(rule => _verifyFunction(executor, rule, inAssets, blockNumber, _assetBalanceManager, _assetManager)))
+            if (!rules.All(rule => _verifyFunction(executor, rule, inAssets, blockNumber, config, _assetBalanceManager, _assetManager)))
             {
                 outAssets = Array.Empty<IAsset>();
                 return false;
@@ -134,7 +135,7 @@ namespace Ajuna.SAGE.Core
             }
 
             // execute the transition function
-            IEnumerable<IAsset> functionResult = function(executor, rules, fee, inAssets, randomHash, blockNumber, _assetBalanceManager);
+            IEnumerable<IAsset> functionResult = function(executor, rules, fee, inAssets, randomHash, blockNumber, config, _assetBalanceManager);
 
             outAssets = functionResult != null ? functionResult.ToArray() : Array.Empty<IAsset>();
 

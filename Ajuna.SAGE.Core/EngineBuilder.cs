@@ -16,7 +16,7 @@ namespace Ajuna.SAGE.Core
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? Fee, TransitionFunction<TRules> Function)> _transitions;
 
-        private Func<IAccount, TRules, IAsset[], uint, IBalanceManager, IAssetManager, bool> _verifyFunction;
+        private Func<IAccount, TRules, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> _verifyFunction;
 
         /// <summary>
         /// Engine Builder
@@ -46,7 +46,7 @@ namespace Ajuna.SAGE.Core
         /// </summary>
         /// <param name="verifyFunction"></param>
         /// <returns></returns>
-        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IAccount, TRules, IAsset[], uint, IBalanceManager, IAssetManager, bool> verifyFunction)
+        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IAccount, TRules, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> verifyFunction)
         {
             _verifyFunction = verifyFunction;
             return this;

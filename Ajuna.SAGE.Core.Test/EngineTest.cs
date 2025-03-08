@@ -19,7 +19,7 @@ namespace Ajuna.SAGE.Core.Test
             _mockBlockchainInfoProvider.Setup(m => m.GenerateRandomHash()).Returns([1, 2, 3, 4]);
             _mockBlockchainInfoProvider.Setup(m => m.CurrentBlockNumber).Returns(100);
 
-            _engine = new Engine<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object, (p, r, a, b, m, s) => true);
+            _engine = new Engine<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object, (p, r, a, b, c, m, s) => true);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace Ajuna.SAGE.Core.Test
 
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) =>
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
@@ -82,7 +82,7 @@ namespace Ajuna.SAGE.Core.Test
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m) => w.Select(a => a);
 
             _engine.AddTransition(identifier, [rules], default, function);
 
@@ -134,7 +134,7 @@ namespace Ajuna.SAGE.Core.Test
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rule = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 2);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m) => w.Select(a => a);
 
             var blockchainInfoProvider = new Mock<IBlockchainInfoProvider>();
             blockchainInfoProvider.Setup(b => b.GenerateRandomHash()).Returns(new byte[] { 0x00 });
@@ -142,7 +142,7 @@ namespace Ajuna.SAGE.Core.Test
 
             // Setting up the Engine with custom Verify function
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(blockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b, m, s) =>
+                .SetVerifyFunction((p, r, a, b, c, m, s) =>
                 {
                     if (r.RuleType == (byte)ActionRuleType.MinAsset && r.RuleOp == (byte)ActionRuleOp.GreaterEqual)
                     {
