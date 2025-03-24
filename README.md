@@ -1,5 +1,5 @@
 # SAGE Game Framework (ref. implementation)
-![Build](https://github.com/ajuna-network/Ajuna.SAGE.Core/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/ajuna-network/Ajuna.SAGE.Core/actions/workflows/publish_core.yml/badge.svg)
 [![Nuget](https://img.shields.io/nuget/v/Ajuna.SAGE.Core)](https://www.nuget.org/packages/Ajuna.SAGE.Core/)
 [![GitHub issues](https://img.shields.io/github/issues/ajuna-network/Ajuna.SAGE.Core.svg)](https://github.com/ajuna-network/Ajuna.SAGE.Core/issues)
 [![license](https://img.shields.io/github/license/ajuna-network/Ajuna.SAGE.Core)](https://github.com/ajuna-network/Ajuna.SAGE.Core/blob/origin/LICENSE)
