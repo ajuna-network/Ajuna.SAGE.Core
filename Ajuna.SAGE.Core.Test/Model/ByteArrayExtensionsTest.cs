@@ -34,7 +34,11 @@ namespace Ajuna.SAGE.Core.Test.Model
             // Also verify that other bits remain unchanged (still 0)
             for (int i = 0; i < 8; i++)
             {
-                if (i == 3) continue;
+                if (i == 3)
+                {
+                    continue;
+                }
+
                 Assert.That((data[0] & (1 << i)) == 0, Is.True);
             }
         }
@@ -52,7 +56,11 @@ namespace Ajuna.SAGE.Core.Test.Model
             // Verify: other bits remain set.
             for (int i = 0; i < 8; i++)
             {
-                if (i == 5) continue;
+                if (i == 5)
+                {
+                    continue;
+                }
+
                 Assert.That((data[0] & (1 << i)) != 0, Is.True);
             }
         }
@@ -109,6 +117,48 @@ namespace Ajuna.SAGE.Core.Test.Model
         }
 
         [Test]
+        public void ReadBlock_ReturnsCorrectData()
+        {
+            byte[] data = new byte[21];
+            // Initialize some known values.
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = (byte)i;
+            }
+
+            byte[] block = data.Read(16, 5);
+            // Expected block: {16, 17, 18, 19, 20} (if data had enough elements)
+            // (adjust expected values according to your test array size)
+            Assert.That(block, Is.EqualTo(new byte[] { 16, 17, 18, 19, 20 }));
+        }
+
+        [Test]
+        public void SetBlock_WritesCorrectData()
+        {
+            byte[] data = new byte[20];
+            byte[] block = new byte[] { 101, 102, 103, 104, 105 };
+
+            data.Set(10, block);
+            byte[] result = data.Read(10, 5);
+            Assert.That(result, Is.EqualTo(block));
+        }
+
+        [Test]
+        public void ReadBlock_OutOfRange_ThrowsException()
+        {
+            byte[] data = new byte[10];
+            Assert.Throws<ArgumentOutOfRangeException>(() => data.Read(8, 5));
+        }
+
+        [Test]
+        public void SetBlock_OutOfRange_ThrowsException()
+        {
+            byte[] data = new byte[10];
+            byte[] block = new byte[] { 1, 2, 3 };
+            Assert.Throws<ArgumentOutOfRangeException>(() => data.Set(9, block));
+        }
+
+        [Test]
         public void SetAndRead_Byte_LittleEndian()
         {
             byte[] data = new byte[10];
@@ -155,7 +205,10 @@ namespace Ajuna.SAGE.Core.Test.Model
             // Validate underlying bytes (big-endian)
             byte[] expectedBytes = BitConverter.GetBytes(expected);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(expectedBytes);
+            }
+
             Assert.That(data[2], Is.EqualTo(expectedBytes[0]));
             Assert.That(data[3], Is.EqualTo(expectedBytes[1]));
         }
@@ -187,7 +240,10 @@ namespace Ajuna.SAGE.Core.Test.Model
 
             byte[] expectedBytes = BitConverter.GetBytes(expected);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(expectedBytes);
+            }
+
             Assert.That(data[3], Is.EqualTo(expectedBytes[0]));
             Assert.That(data[4], Is.EqualTo(expectedBytes[1]));
             Assert.That(data[5], Is.EqualTo(expectedBytes[2]));
@@ -225,7 +281,10 @@ namespace Ajuna.SAGE.Core.Test.Model
 
             byte[] expectedBytes = BitConverter.GetBytes(expected);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(expectedBytes);
+            }
+
             Assert.That(data[7], Is.EqualTo(expectedBytes[0]));
             Assert.That(data[8], Is.EqualTo(expectedBytes[1]));
             Assert.That(data[9], Is.EqualTo(expectedBytes[2]));

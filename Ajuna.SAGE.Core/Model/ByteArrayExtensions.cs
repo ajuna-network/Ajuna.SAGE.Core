@@ -66,6 +66,46 @@ namespace Ajuna.SAGE.Core.Model
         }
 
         /// <summary>
+        /// Reads a block of bytes from the array starting at the given position.
+        /// </summary>
+        /// <param name="bytes">The source byte array.</param>
+        /// <param name="pos">The starting position.</param>
+        /// <param name="length">The number of bytes to read.</param>
+        /// <returns>A new byte array containing the requested block.</returns>
+        public static byte[] Read(this byte[] bytes, int pos, int length)
+        {
+            if (pos < 0 || pos + length > bytes.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pos), "Out of bounds position.");
+            }
+
+            byte[] result = new byte[length];
+            Array.Copy(bytes, pos, result, 0, length);
+            return result;
+        }
+
+        /// <summary>
+        /// Writes a block of bytes into the array starting at the given position.
+        /// </summary>
+        /// <param name="bytes">The target byte array.</param>
+        /// <param name="pos">The starting position.</param>
+        /// <param name="value">The block of bytes to write.</param>
+        public static void Set(this byte[] bytes, int pos, byte[] value)
+        {
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            if (pos < 0 || pos + value.Length > bytes.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pos), "Out of bounds position.");
+            }
+
+            Array.Copy(value, 0, bytes, pos, value.Length);
+        }
+
+        /// <summary>
         /// Writes a value of type T into the byte array starting at the given position.
         /// Supports types: byte, ushort, uint, ulong, and enums (only if their underlying type is byte).
         /// Data is written in little‑endian order by default unless <paramref name="littleEndian"/> is false.
