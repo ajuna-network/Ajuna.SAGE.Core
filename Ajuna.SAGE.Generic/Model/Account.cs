@@ -1,5 +1,4 @@
-﻿using Ajuna.SAGE.Model;
-using System;
+﻿using System;
 
 namespace Ajuna.SAGE.Core.Model
 {
@@ -42,12 +41,5 @@ namespace Ajuna.SAGE.Core.Model
             return Id == asset.OwnerId;
         }
 
-        /// <summary>
-        /// Map to domain
-        /// </summary>
-        /// <param name="dbPlayer"></param>
-        /// <returns></returns>
-        public static Account MapToDomain(DbPlayer dbPlayer) =>
-            new Account(dbPlayer.Id, dbPlayer.BalanceValue) { };
     }
 }

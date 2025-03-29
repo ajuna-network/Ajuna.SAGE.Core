@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<!-- NuGet Package Informationen -->
 		<PackageId>Ajuna.SAGE.Generic</PackageId>
-		<Version>0.0.2</Version>
+		<Version>0.0.5</Version>
 		<Company>BloGa Tech AG</Company>
 		<Authors>Cedric Decoster</Authors>
 		<Description>Substrate Asset Game Engine (generics)</Description>

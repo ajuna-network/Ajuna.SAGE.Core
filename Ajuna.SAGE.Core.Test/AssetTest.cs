@@ -8,6 +8,8 @@ namespace Ajuna.SAGE.Tests
     [TestFixture]
     public class AssetTests
     {
+        public const int DATA_SIZE = 32;
+
         [Test]
         public void Test_AssetConstructor_WithByteArrayDna()
         {
@@ -58,7 +60,7 @@ namespace Ajuna.SAGE.Tests
             uint genesis = 0;
 
             // Act
-            Asset asset = new Asset(id, 0, collectionId, score, genesis, new byte[Constants.DNA_SIZE]);
+            Asset asset = new Asset(id, 0, collectionId, score, genesis, new byte[DATA_SIZE]);
 
             // Assert
             Assert.Multiple(() =>
@@ -66,7 +68,7 @@ namespace Ajuna.SAGE.Tests
                 Assert.That(asset.Id, Is.EqualTo(id), "The ID should match the provided value.");
                 Assert.That(asset.CollectionId, Is.EqualTo(collectionId), "The SetId should match the provided value.");
                 Assert.That(asset.Score, Is.EqualTo(score), "The Score should match the provided value.");
-                Assert.That(asset.Data, Is.EqualTo(new byte[Constants.DNA_SIZE]), "The DNA should be initialized to the default size.");
+                Assert.That(asset.Data, Is.EqualTo(new byte[DATA_SIZE]), "The DNA should be initialized to the default size.");
             });
         }
 

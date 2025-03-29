@@ -1,5 +1,4 @@
-﻿using Ajuna.SAGE.Model;
-using System;
+﻿using System;
 using System.Buffers;
 using System.Linq;
 
@@ -68,20 +67,12 @@ namespace Ajuna.SAGE.Core.Model
         }
 
         /// <inheritdoc/>
-        public virtual byte[] MatchType => Data != null && Data.Length > 3 ? Data.Take(MatchTypeSize).ToArray() : Array.Empty<byte>();
+        public virtual byte[] MatchType => Data != null && Data.Length >= MatchTypeSize ? Data.Take(MatchTypeSize).ToArray() : Array.Empty<byte>();
 
         /// <inheritdoc/>
         public bool OwnedBy(IAccount account)
         {
             return OwnerId == account.Id;
         }
-
-        /// <summary>
-        /// Map to domain
-        /// </summary>
-        /// <param name="dbAsset"></param>
-        /// <returns></returns>
-        public static Asset MapToDomain(DbAsset dbAsset) =>
-            new Asset(dbAsset.Id, dbAsset.OwnerId, dbAsset.CollectionId, dbAsset.Score, dbAsset.Genesis, dbAsset.Data);
     }
 }

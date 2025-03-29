@@ -43,10 +43,10 @@ namespace Ajuna.SAGE.Core.Test
             var random = new Random();
 
             // Act
-            var result = Utils.RandomEnum<ItemSubTypeA>(random);
+            var result = Utils.RandomEnum<RarityType>(random);
 
             // Assert
-            Assert.That(Enum.IsDefined(typeof(ItemSubTypeA), result), Is.True);
+            Assert.That(Enum.IsDefined(typeof(RarityType), result), Is.True);
         }
 
         [Test]
