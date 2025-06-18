@@ -14,7 +14,7 @@ namespace Ajuna.SAGE.Core
     {
         private readonly IBlockchainInfoProvider _blockchainInfoProvider;
 
-        private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? Fee, TransitionFunction<TRules> Function)> _transitions;
+        private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitionFee? Fee, TransitionFunction<TRules> Function)> _transitions;
 
         private Func<IAccount, TRules, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> _verifyFunction;
 
@@ -25,7 +25,7 @@ namespace Ajuna.SAGE.Core
         public EngineBuilder(IBlockchainInfoProvider blockchainInfoProvider)
         {
             _blockchainInfoProvider = blockchainInfoProvider;
-            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)>();
+            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitionFee? fee, TransitionFunction<TRules> Function)>();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Ajuna.SAGE.Core
         /// <param name="idType2"></param>
         /// <param name="transitionFunction"></param>
         /// <returns></returns>
-        public EngineBuilder<TIdentifier, TRules> AddTransition(TIdentifier identifier, TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> transitionFunction)
+        public EngineBuilder<TIdentifier, TRules> AddTransition(TIdentifier identifier, TRules[] rules, ITransitionFee? fee, TransitionFunction<TRules> transitionFunction)
         {
             _transitions[identifier] = (rules, fee, transitionFunction);
             return this;

@@ -2,16 +2,16 @@
 
 namespace Ajuna.SAGE.Core.Model
 {
-    public interface ITransitioFee
+    public interface ITransitionFee
     {
         uint Fee { get; }
     }
 
-    public class TransitioFee : ITransitioFee
+    public class TransitionFee : ITransitionFee
     {
         public uint Fee { get; private set; }
 
-        public TransitioFee(uint fee)
+        public TransitionFee(uint fee)
         {
             Fee = fee;
         }
