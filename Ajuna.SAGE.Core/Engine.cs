@@ -12,7 +12,7 @@ namespace Ajuna.SAGE.Core
     public delegate IEnumerable<IAsset> TransitionFunction<TRules>(
         IAccount executor,
         TRules[] rules,
-        ITransitioFee? fee,
+        ITransitionFee? fee,
         IEnumerable<IAsset> assets,
         byte[] randomHash,
         uint blockNumber,
@@ -29,7 +29,7 @@ namespace Ajuna.SAGE.Core
 
         private readonly Func<IAccount, TRules, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> _verifyFunction;
 
-        private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
+        private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitionFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
         private readonly AccountManager _accountManager;
         public IAccountManager AccountManager => _accountManager;
@@ -51,7 +51,7 @@ namespace Ajuna.SAGE.Core
         {
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
-            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)>();
+            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitionFee? fee, TransitionFunction<TRules> Function)>();
 
             _accountManager = new AccountManager();
             _assetManager = new AssetManager();
@@ -69,7 +69,7 @@ namespace Ajuna.SAGE.Core
         /// <param name="idType1"></param>
         /// <param name="idType2"></param>
         /// <param name="transitionFunction"></param>
-        public void AddTransition(TIdentifier identifier, TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> function)
+        public void AddTransition(TIdentifier identifier, TRules[] rules, ITransitionFee? fee, TransitionFunction<TRules> function)
         {
             _transitions[identifier] = (rules, fee, function);
         }
@@ -111,13 +111,13 @@ namespace Ajuna.SAGE.Core
                 throw new NotSupportedException("Trying to transition lockable.");
             }
 
-            if (!_transitions.TryGetValue(identifier, out (TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> function) tuple))
+            if (!_transitions.TryGetValue(identifier, out (TRules[] rules, ITransitionFee? fee, TransitionFunction<TRules> function) tuple))
             {
                 throw new NotSupportedException($"Unsupported Transition for Identifier ({identifier.TransitionType}, {identifier.TransitionSubType}).");
             }
 
             TRules[] rules = tuple.rules;
-            ITransitioFee? fee = tuple.fee;
+            ITransitionFee? fee = tuple.fee;
             TransitionFunction<TRules> function = tuple.function;
 
             // check if the executor has the assets and the rules are all okay

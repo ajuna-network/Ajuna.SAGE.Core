@@ -59,7 +59,7 @@ entity "Balance" as Balance {
 entity "Transition" as Transition {
   * Identifier : ITransitionIdentifier
   * Rules : ITransitionRule[]
-  * Fee : ITransitioFee?
+  * Fee : ITransitionFee?
 }
 
 entity "Engine" as Engine {
