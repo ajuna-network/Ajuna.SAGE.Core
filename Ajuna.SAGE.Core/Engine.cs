@@ -1,4 +1,4 @@
-﻿using Ajuna.SAGE.Core.Manager;
+using Ajuna.SAGE.Core.Manager;
 using Ajuna.SAGE.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,8 @@ namespace Ajuna.SAGE.Core
         byte[] randomHash,
         uint blockNumber,
         object? config,
-        IBalanceManager assetBalances)
+        IBalanceManager assetBalances,
+        ILock lockManager)
         where TRules : ITransitionRule;
 
     public class Engine<TIdentifier, TRules>
@@ -40,6 +41,9 @@ namespace Ajuna.SAGE.Core
         private readonly BalanceManager _assetBalanceManager;
         public IBalanceManager AssetBalanceManager => _assetBalanceManager;
 
+        private readonly LockManager _lockManager;
+        public ILock LockManager => _lockManager;
+
         // only for testing
         public uint? AssetBalance(ulong id) => _assetBalanceManager.AssetBalance(id);
 
@@ -56,6 +60,7 @@ namespace Ajuna.SAGE.Core
             _accountManager = new AccountManager();
             _assetManager = new AssetManager();
             _assetBalanceManager = new BalanceManager();
+            _lockManager = new LockManager();
         }
 
         /// <summary>
@@ -105,10 +110,10 @@ namespace Ajuna.SAGE.Core
                 throw new NotSupportedException("Trying to transition duplicates.");
             }
 
-            // lockable check
-            if (inAssets.Any(p => p.IsLockable))
+            // lock check: reject assets that are lockable AND currently locked
+            if (inAssets.Any(p => p.IsLockable && _lockManager.IsLocked(p.Id) == true))
             {
-                throw new NotSupportedException("Trying to transition lockable.");
+                throw new NotSupportedException("Trying to transition a locked asset.");
             }
 
             if (!_transitions.TryGetValue(identifier, out (TRules[] rules, ITransitionFee? fee, TransitionFunction<TRules> function) tuple))
@@ -135,7 +140,7 @@ namespace Ajuna.SAGE.Core
             }
 
             // execute the transition function
-            IEnumerable<IAsset> functionResult = function(executor, rules, fee, inAssets, randomHash, blockNumber, config, _assetBalanceManager);
+            IEnumerable<IAsset> functionResult = function(executor, rules, fee, inAssets, randomHash, blockNumber, config, _assetBalanceManager, _lockManager);
 
             outAssets = functionResult != null ? functionResult.ToArray() : Array.Empty<IAsset>();
 
@@ -156,15 +161,16 @@ namespace Ajuna.SAGE.Core
             var updateIds = new List<uint>();
             var deleteIds = new List<uint>();
             var createIds = new List<uint>();
+
+            // find all updated and deleted ids
             if (inputIds != null)
             {
                 foreach (var inputId in inputIds)
                 {
                     if (outputIds != null && outputIds.Contains(inputId))
                     {
-
                         updateIds.Add(inputId);
-                     }
+                    }
                     else
                     {
                         deleteIds.Add(inputId);
@@ -172,6 +178,7 @@ namespace Ajuna.SAGE.Core
                 }
             }
 
+            // find all created ids
             if (outputs != null)
             {
                 foreach (var output in outputIds)
@@ -183,22 +190,19 @@ namespace Ajuna.SAGE.Core
                 }
             }
 
-            if (outputs != null)
+            // handle all created assets in the asset manager
+            foreach (var id in createIds)
             {
-                foreach (var id in createIds)
-                {
-                    _assetManager.Create(outputs.First(p => p.Id == id));
-                }
+                _assetManager.Create(outputs.First(p => p.Id == id));
             }
 
-            if (inputs != null)
+            // handle all updated assets in the asset manager
+            foreach (var id in updateIds)
             {
-                foreach (var id in updateIds)
-                {
-                    _assetManager.Update(inputs.First(p => p.Id == id));
-                }
+                _assetManager.Update(outputs.First(p => p.Id == id));
             }
 
+            // handle all deleted assets in the asset manager
             foreach (var id in deleteIds)
             {
                 _assetManager.Delete(id);
