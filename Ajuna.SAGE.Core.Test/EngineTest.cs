@@ -39,7 +39,7 @@ namespace Ajuna.SAGE.Core.Test
 
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m, l) =>
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m, l, k) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
@@ -82,7 +82,7 @@ namespace Ajuna.SAGE.Core.Test
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m, l) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m, l, k) => w.Select(a => a);
 
             _engine.AddTransition(identifier, [rules], default, function);
 
@@ -134,7 +134,7 @@ namespace Ajuna.SAGE.Core.Test
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rule = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 2);
 
-            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m, l) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, c, m, l, k) => w.Select(a => a);
 
             var blockchainInfoProvider = new Mock<IBlockchainInfoProvider>();
             blockchainInfoProvider.Setup(b => b.GenerateRandomHash()).Returns(new byte[] { 0x00 });

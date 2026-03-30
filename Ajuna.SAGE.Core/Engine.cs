@@ -18,7 +18,8 @@ namespace Ajuna.SAGE.Core
         uint blockNumber,
         object? config,
         IBalanceManager assetBalances,
-        ILock lockManager)
+        ILock lockManager,
+        IMarket marketManager)
         where TRules : ITransitionRule;
 
     public class Engine<TIdentifier, TRules>
@@ -44,6 +45,9 @@ namespace Ajuna.SAGE.Core
         private readonly LockManager _lockManager;
         public ILock LockManager => _lockManager;
 
+        private readonly MarketManager _marketManager;
+        public IMarket MarketManager => _marketManager;
+
         // only for testing
         public uint? AssetBalance(ulong id) => _assetBalanceManager.AssetBalance(id);
 
@@ -61,6 +65,7 @@ namespace Ajuna.SAGE.Core
             _assetManager = new AssetManager();
             _assetBalanceManager = new BalanceManager();
             _lockManager = new LockManager();
+            _marketManager = new MarketManager();
         }
 
         /// <summary>
@@ -140,7 +145,7 @@ namespace Ajuna.SAGE.Core
             }
 
             // execute the transition function
-            IEnumerable<IAsset> functionResult = function(executor, rules, fee, inAssets, randomHash, blockNumber, config, _assetBalanceManager, _lockManager);
+            IEnumerable<IAsset> functionResult = function(executor, rules, fee, inAssets, randomHash, blockNumber, config, _assetBalanceManager, _lockManager, _marketManager);
 
             outAssets = functionResult != null ? functionResult.ToArray() : Array.Empty<IAsset>();
 
