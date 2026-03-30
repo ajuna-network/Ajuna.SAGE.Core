@@ -8,36 +8,27 @@ jobs:
   build:
     name: build & test & publish
     runs-on: ubuntu-latest
-        
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       ##
       # Setup
-      # Setup multiple .NET versions so we can build against all referenced .NET versions.
+      # Setup .NET versions for multi-target build (netstandard2.1 + net10.0).
       ##
-      - name: Setup .NET Core 2.1.x
-        uses: actions/setup-dotnet@v1
+      - name: Setup .NET 10.0.x
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 2.1.x
-     
-      - name: Setup .NET 6.0.x
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
+          dotnet-version: 10.0.x
+          dotnet-quality: preview
 
-      - name: Setup .NET 8.0.x
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 8.0.x
-      
       ##
       # Dependencies
       # Restore the project and its dependencies.
       ##
       - name: Install dependencies
         run: dotnet restore
-      
+
       ##
       # Publish
       ##
