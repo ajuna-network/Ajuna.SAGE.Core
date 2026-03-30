@@ -1,22 +1,44 @@
-﻿using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Core.Model;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Ajuna.SAGE.Core.Manager
 {
+    /// <summary>
+    /// Manages game assets (CRUD operations and ownership queries).
+    /// Assets are the fundamental game objects with data, score, and ownership.
+    /// </summary>
     public interface IAssetManager
     {
+        /// <summary>
+        /// Create a new asset. Assigns a unique ID and stores it. Returns the assigned ID.
+        /// </summary>
         uint Create(IAsset asset);
+
+        /// <summary>
+        /// Read an asset by ID. Returns null if not found.
+        /// </summary>
         IAsset? Read(uint id);
+
+        /// <summary>
+        /// Update an existing asset. Replaces the stored asset with the given one.
+        /// Returns false if the asset does not exist.
+        /// </summary>
         bool Update(IAsset asset);
+
+        /// <summary>
+        /// Delete an asset by reference. Returns false if not found.
+        /// </summary>
         bool Delete(IAsset asset);
+
+        /// <summary>
+        /// Delete an asset by ID. Returns false if not found.
+        /// </summary>
         bool Delete(uint id);
 
         /// <summary>
-        /// Assets of IAccount
+        /// Get all assets owned by the given account.
         /// </summary>
-        /// <param name="account"></param>
-        /// <returns></returns>
         IEnumerable<IAsset> AssetOf(IAccount account);
     }
 
@@ -32,6 +54,7 @@ namespace Ajuna.SAGE.Core.Manager
             _data = new Dictionary<uint, IAsset>();
         }
 
+        /// <inheritdoc/>
         public uint Create(IAsset asset)
         {
             uint id = _nextId++;
@@ -40,6 +63,7 @@ namespace Ajuna.SAGE.Core.Manager
             return id;
         }
 
+        /// <inheritdoc/>
         public IAsset? Read(uint id)
         {
             if (!_data.TryGetValue(id, out IAsset? asset))
@@ -49,6 +73,7 @@ namespace Ajuna.SAGE.Core.Manager
             return asset;
         }
 
+        /// <inheritdoc/>
         public bool Update(IAsset asset)
         {
             if (!_data.Remove(asset.Id))
@@ -60,10 +85,13 @@ namespace Ajuna.SAGE.Core.Manager
             return true;
         }
 
+        /// <inheritdoc/>
         public bool Delete(IAsset asset)
         {
             return Delete(asset.Id);
         }
+
+        /// <inheritdoc/>
         public bool Delete(uint id)
         {
             return _data.Remove(id);
