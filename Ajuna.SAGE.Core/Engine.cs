@@ -2,6 +2,7 @@ using Ajuna.SAGE.Core.Manager;
 using Ajuna.SAGE.Core.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -214,5 +215,91 @@ namespace Ajuna.SAGE.Core
             }
         }
 
+        // ─── Snapshot / Restore facade ────────────────────────────────────
+        //
+        // Engine.Snapshot() and Engine.Restore() let consumers persist the
+        // entire engine state via a single opaque byte payload. Each
+        // manager (and the BlockchainInfoProvider) implements ISnapshotable;
+        // the engine simply concatenates each component's snapshot inside a
+        // versioned envelope so future format additions don't break old
+        // snapshots.
+        //
+        // Transition rules and the verify function are NOT serialized — they
+        // are wired in at engine construction by the consumer's builder, so
+        // a typical restore flow looks like:
+        //
+        //     var engine = AvatarEngineBuilder.Build(blockchainInfo);
+        //     engine.Restore(File.ReadAllBytes("gamestate.bin"));
+        //
+        // The consumer is responsible for using the SAME builder both before
+        // saving and after loading.
+
+        private const byte ENGINE_SNAPSHOT_VERSION = 1;
+
+        /// <summary>
+        /// Serializes the entire engine state (all five managers + the
+        /// blockchain info provider) into a single versioned byte payload
+        /// that can later be replayed via <see cref="Restore"/>.
+        /// </summary>
+        public byte[] Snapshot()
+        {
+            using var ms = new MemoryStream();
+            using var w = new BinaryWriter(ms);
+
+            w.Write(ENGINE_SNAPSHOT_VERSION);
+
+            WriteSection(w, _accountManager.Snapshot());
+            WriteSection(w, _assetManager.Snapshot());
+            WriteSection(w, _assetBalanceManager.Snapshot());
+            WriteSection(w, _lockManager.Snapshot());
+            WriteSection(w, _marketManager.Snapshot());
+            WriteSection(w, RequireSnapshotable(_blockchainInfo, nameof(_blockchainInfo)).Snapshot());
+
+            return ms.ToArray();
+        }
+
+        /// <summary>
+        /// Replaces the entire engine state with the contents of a snapshot
+        /// previously produced by <see cref="Snapshot"/>. Existing in-memory
+        /// state is discarded before the snapshot is applied. Throws
+        /// <see cref="InvalidDataException"/> if the payload is malformed
+        /// or its envelope version is incompatible.
+        /// </summary>
+        public void Restore(byte[] snapshot)
+        {
+            if (snapshot == null) throw new InvalidDataException("Engine snapshot is null");
+            using var ms = new MemoryStream(snapshot);
+            using var r = new BinaryReader(ms);
+
+            var version = r.ReadByte();
+            if (version != ENGINE_SNAPSHOT_VERSION)
+                throw new InvalidDataException($"Engine snapshot version {version} not supported (expected {ENGINE_SNAPSHOT_VERSION})");
+
+            _accountManager.Restore(ReadSection(r));
+            _assetManager.Restore(ReadSection(r));
+            _assetBalanceManager.Restore(ReadSection(r));
+            _lockManager.Restore(ReadSection(r));
+            _marketManager.Restore(ReadSection(r));
+            RequireSnapshotable(_blockchainInfo, nameof(_blockchainInfo)).Restore(ReadSection(r));
+        }
+
+        private static void WriteSection(BinaryWriter w, byte[] payload)
+        {
+            w.Write(payload.Length);
+            w.Write(payload);
+        }
+
+        private static byte[] ReadSection(BinaryReader r)
+        {
+            int length = r.ReadInt32();
+            return r.ReadBytes(length);
+        }
+
+        private static ISnapshotable RequireSnapshotable(object component, string name)
+        {
+            if (component is ISnapshotable s) return s;
+            throw new InvalidOperationException(
+                $"{name} ({component.GetType().FullName}) does not implement ISnapshotable; cannot snapshot/restore the engine.");
+        }
     }
 }

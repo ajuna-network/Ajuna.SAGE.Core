@@ -1,5 +1,6 @@
 using Ajuna.SAGE.Core.Model;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Ajuna.SAGE.Core.Manager
 {
@@ -31,13 +32,16 @@ namespace Ajuna.SAGE.Core.Manager
         uint EngineId { get; }
     }
 
-    public class AccountManager : IAccountManager
+    public class AccountManager : IAccountManager, ISnapshotable
     {
+        // Snapshot format version for AccountManager. Bump on layout change.
+        private const byte SNAPSHOT_VERSION = 1;
+
         private uint _nextId;
 
         private readonly Dictionary<uint, IAccount> _data = new Dictionary<uint, IAccount>();
 
-        private readonly uint _engineId;
+        private uint _engineId;
 
         /// <inheritdoc/>
         public uint EngineId => _engineId;
@@ -77,6 +81,45 @@ namespace Ajuna.SAGE.Core.Manager
                 return null;
             }
             return account;
+        }
+
+        /// <inheritdoc/>
+        public byte[] Snapshot()
+        {
+            using var ms = new MemoryStream();
+            using var w = new BinaryWriter(ms);
+            w.Write(SNAPSHOT_VERSION);
+            w.Write(_nextId);
+            w.Write(_engineId);
+            w.Write(_data.Count);
+            foreach (var kv in _data)
+            {
+                w.Write(kv.Value.Id);
+                w.Write(kv.Value.Balance.Value);
+            }
+            return ms.ToArray();
+        }
+
+        /// <inheritdoc/>
+        public void Restore(byte[] snapshot)
+        {
+            if (snapshot == null) throw new InvalidDataException("AccountManager snapshot is null");
+            using var ms = new MemoryStream(snapshot);
+            using var r = new BinaryReader(ms);
+            var version = r.ReadByte();
+            if (version != SNAPSHOT_VERSION)
+                throw new InvalidDataException($"AccountManager snapshot version {version} not supported (expected {SNAPSHOT_VERSION})");
+
+            _data.Clear();
+            _nextId = r.ReadUInt32();
+            _engineId = r.ReadUInt32();
+            int count = r.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                uint id = r.ReadUInt32();
+                uint balance = r.ReadUInt32();
+                _data[id] = new Account(id, balance);
+            }
         }
     }
 }

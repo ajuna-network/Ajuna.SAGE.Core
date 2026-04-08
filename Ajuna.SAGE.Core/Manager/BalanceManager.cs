@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Ajuna.SAGE.Core.Manager
@@ -44,8 +45,11 @@ namespace Ajuna.SAGE.Core.Manager
         uint? AssetBalance(ulong id);
     }
 
-    public class BalanceManager : IBalanceManager
+    public class BalanceManager : IBalanceManager, ISnapshotable
     {
+        // Snapshot format version for BalanceManager. Bump on layout change.
+        private const byte SNAPSHOT_VERSION = 1;
+
         private readonly Dictionary<ulong, uint> _data = new Dictionary<ulong, uint>();
 
         /// <inheritdoc/>
@@ -88,5 +92,40 @@ namespace Ajuna.SAGE.Core.Manager
 
         /// <inheritdoc/>
         public uint? AssetBalance(ulong id) => _data.TryGetValue(id, out uint balance) ? balance : (uint?)null;
+
+        /// <inheritdoc/>
+        public byte[] Snapshot()
+        {
+            using var ms = new MemoryStream();
+            using var w = new BinaryWriter(ms);
+            w.Write(SNAPSHOT_VERSION);
+            w.Write(_data.Count);
+            foreach (var kv in _data)
+            {
+                w.Write(kv.Key);
+                w.Write(kv.Value);
+            }
+            return ms.ToArray();
+        }
+
+        /// <inheritdoc/>
+        public void Restore(byte[] snapshot)
+        {
+            if (snapshot == null) throw new InvalidDataException("BalanceManager snapshot is null");
+            using var ms = new MemoryStream(snapshot);
+            using var r = new BinaryReader(ms);
+            var version = r.ReadByte();
+            if (version != SNAPSHOT_VERSION)
+                throw new InvalidDataException($"BalanceManager snapshot version {version} not supported (expected {SNAPSHOT_VERSION})");
+
+            _data.Clear();
+            int count = r.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                ulong key = r.ReadUInt64();
+                uint value = r.ReadUInt32();
+                _data[key] = value;
+            }
+        }
     }
 }
